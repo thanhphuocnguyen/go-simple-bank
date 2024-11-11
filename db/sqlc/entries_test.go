@@ -8,9 +8,8 @@ import (
 	"github.com/thanhphuocnguyen/go-simple-bank/utils"
 )
 
-func createNewEntry(t *testing.T) Entry {
-	account, err := testQueries.GetAccount(context.Background(), 1)
-
+func createNewEntry(t *testing.T, accountID int64) Entry {
+	account, err := testQueries.GetAccount(context.Background(), accountID)
 	require.NoError(t, err)
 
 	entryModel := CreateEntryParams{
@@ -27,11 +26,14 @@ func createNewEntry(t *testing.T) Entry {
 	return entry
 }
 func TestCreateEntry(t *testing.T) {
-	createNewEntry(t)
+	account := createRandomAccount(t)
+	createNewEntry(t, account.ID)
 }
 
 func TestGetEntry(t *testing.T) {
-	entry1 := createNewEntry(t)
+	account := createRandomAccount(t)
+
+	entry1 := createNewEntry(t, account.ID)
 	entry2, err := testQueries.GetEntry(context.Background(), entry1.ID)
 
 	require.NoError(t, err)
@@ -39,16 +41,17 @@ func TestGetEntry(t *testing.T) {
 	require.Equal(t, entry1.ID, entry2.ID)
 	require.Equal(t, entry1.AccountID, entry2.AccountID)
 	require.Equal(t, entry1.Amount, entry2.Amount)
-	require.WithinDuration(t, entry1.CreatedAt, entry2.CreatedAt, 0)
+	require.WithinDuration(t, entry1.CreatedAt.Time, entry2.CreatedAt.Time, 0)
 }
 
 func TestListEntries(t *testing.T) {
+	account := createRandomAccount(t)
 	for i := 0; i < 10; i++ {
-		createNewEntry(t)
+		createNewEntry(t, account.ID)
 	}
 
 	arg := ListEntriesParams{
-		AccountID: 1,
+		AccountID: account.ID,
 		Limit:     5,
 		Offset:    5,
 	}

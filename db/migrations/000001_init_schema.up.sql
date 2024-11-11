@@ -1,28 +1,26 @@
-CREATE TABLE
-  "accounts" (
-    "id" bigserial PRIMARY KEY,
-    "owner" varchar NOT NULL,
-    "balance" bigint NOT NULL,
-    "currency" varchar NOT NULL,
-    "created_at" timestamptz NOT NULL DEFAULT (now ())
-  );
 
-CREATE TABLE
-  "entries" (
-    "id" bigserial PRIMARY KEY,
-    "amount" bigint NOT NULL,
-    "account_id" bigint NOT NULL,
-    "created_at" timestamptz NOT NULL DEFAULT (now ())
-  );
+CREATE TABLE "accounts" (
+  "id" bigserial PRIMARY KEY,
+  "owner" varchar NOT NULL,
+  "balance" bigint NOT NULL,
+  "currency" varchar NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now())
+);
 
-CREATE TABLE
-  "transfers" (
-    "id" bigserial PRIMARY KEY,
-    "amount" bigint NOT NULL,
-    "from_account_id" bigint NOT NULL,
-    "to_account_id" bigint NOT NULL,
-    "created_at" timestamptz NOT NULL DEFAULT (now ())
-  );
+CREATE TABLE "entries" (
+  "id" bigserial PRIMARY KEY,
+  "amount" bigint NOT NULL,
+  "account_id" bigint NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now())
+);
+
+CREATE TABLE "transfers" (
+  "id" bigserial PRIMARY KEY,
+  "amount" bigint NOT NULL,
+  "from_account_id" bigint NOT NULL,
+  "to_account_id" bigint NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now())
+);
 
 CREATE INDEX ON "accounts" ("owner");
 

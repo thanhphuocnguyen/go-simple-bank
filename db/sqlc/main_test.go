@@ -1,25 +1,28 @@
 package db
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
 	"os"
 	"testing"
 
+	"github.com/jackc/pgx/v5/pgxpool"
+	_ "github.com/jackc/pgx/v5/stdlib"
 	_ "github.com/lib/pq"
-)
-
-const (
-	dbDriver = "postgres"
-	dbSource = "postgresql://root:secret@localhost:5433/simple_bank?sslmode=disable"
+	"github.com/thanhphuocnguyen/go-simple-bank/utils"
 )
 
 var testQueries *Queries
-var testDB *sql.DB
+var testDB *pgxpool.Pool
 
 func TestMain(m *testing.M) {
 	var err error
-	testDB, err = sql.Open(dbDriver, dbSource)
+	config, err := utils.LoadConfig("../..")
+	if err != nil {
+		panic(err)
+	}
+
+	testDB, err = pgxpool.New(context.Background(), config.DBSource)
 	if err != nil {
 		panic(err)
 	}

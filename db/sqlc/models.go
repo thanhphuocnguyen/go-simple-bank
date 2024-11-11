@@ -5,30 +5,39 @@
 package db
 
 import (
-	"time"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Account struct {
-	ID        int64
-	Owner     string
-	Balance   int64
-	Currency  string
-	CreatedAt time.Time
+	ID        int64              `json:"id"`
+	Owner     string             `json:"owner"`
+	Balance   int64              `json:"balance"`
+	Currency  string             `json:"currency"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
 }
 
 type Entry struct {
-	ID int64
+	ID int64 `json:"id"`
 	// can be neg or pos number
-	Amount    int64
-	AccountID int64
-	CreatedAt time.Time
+	Amount    int64              `json:"amount"`
+	AccountID int64              `json:"account_id"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
 }
 
 type Transfer struct {
-	ID int64
+	ID int64 `json:"id"`
 	// it must be pos num
-	Amount        int64
-	FromAccountID int64
-	ToAccountID   int64
-	CreatedAt     time.Time
+	Amount        int64              `json:"amount"`
+	FromAccountID int64              `json:"from_account_id"`
+	ToAccountID   int64              `json:"to_account_id"`
+	CreatedAt     pgtype.Timestamptz `json:"created_at"`
+}
+
+type User struct {
+	Username          string             `json:"username"`
+	Email             string             `json:"email"`
+	FullName          string             `json:"full_name"`
+	HashedPassword    string             `json:"hashed_password"`
+	PasswordChangedAt pgtype.Timestamptz `json:"password_changed_at"`
+	CreatedAt         pgtype.Timestamptz `json:"created_at"`
 }
