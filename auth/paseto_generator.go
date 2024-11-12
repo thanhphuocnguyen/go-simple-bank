@@ -34,11 +34,9 @@ func (g *PasetoGenerator) GenerateToken(username string, duration time.Duration)
 func (g *PasetoGenerator) VerifyToken(token string) (*Payload, error) {
 	parser := paseto.NewParser()
 	parser.AddRule(paseto.NotExpired())
-	parser.AddRule(paseto.IssuedBy("simple-bank"))
 	parsedToken, err := parser.ParseV4Local(g.symmetricKey, token, g.implicit)
 
 	if err != nil {
-		log.Println(err)
 		if paseto.RuleError.Is(paseto.RuleError{}, err) {
 			return nil, ErrExpiredToken
 		}
