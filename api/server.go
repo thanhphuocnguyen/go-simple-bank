@@ -4,35 +4,28 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/validator/v10"
+	"github.com/thanhphuocnguyen/go-simple-bank/auth"
 	db "github.com/thanhphuocnguyen/go-simple-bank/db/sqlc"
+	"github.com/thanhphuocnguyen/go-simple-bank/utils"
 )
 
 type Server struct {
-	store  db.Store
-	router *gin.Engine
+	config         utils.Config
+	store          db.Store
+	router         *gin.Engine
+	tokenGenerator auth.TokenGenerator
 }
 
-func NewServer(store db.Store) *Server {
-	server := &Server{store: store}
-	router := gin.Default()
-
-	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
-		v.RegisterValidation("currency", validCurrency)
+func NewServer(config utils.Config, store db.Store) (*Server, error) {
+	tokenGenerator, err := auth.NewPasetoGenerator()
+	if err != nil {
+		return nil, err
 	}
-	// add routes to router
-	// add routes for user
-	router.POST("/users", server.createUser)
 
-	// add routes for accounts
-	router.POST("/accounts", server.createAccount)
-	router.GET("/accounts/:id", server.getAccount)
-	router.GET("/accounts", server.getAccounts)
+	server := &Server{store: store, tokenGenerator: tokenGenerator, config: config}
+	server.setupRouter()
 
-	// add routes for transfers
-	router.POST("/transfers", server.createTransfer)
-
-	server.router = router
-	return server
+	return server, nil
 }
 
 func (server *Server) Start(address string) error {
@@ -41,4 +34,25 @@ func (server *Server) Start(address string) error {
 
 func errorResponse(err error) gin.H {
 	return gin.H{"error": err.Error()}
+}
+
+func (server *Server) setupRouter() {
+	router := gin.Default()
+
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		v.RegisterValidation("currency", validCurrency)
+	}
+
+	// add routes for user
+	router.POST("/users", server.createUser)
+	router.POST("/users/login", server.loginUser)
+
+	// add routes for accounts
+	router.POST("/accounts", server.createAccount)
+	router.GET("/accounts/:id", server.getAccount)
+	router.GET("/accounts", server.getAccounts)
+
+	// add routes for transfers
+	router.POST("/transfers", server.createTransfer)
+	server.router = router
 }
