@@ -1,5 +1,5 @@
 postgres:
-	docker run --name postgres16 -p 5433:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret POSTGRES_DB=simple_bank -d postgres:16-alpine
+	docker run --name postgres16 --network=bank-network -p 5433:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -e POSTGRES_DB=simple_bank -d postgres:16-alpine
 
 stpostgres:
 	docker stop postgres16

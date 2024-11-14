@@ -1,0 +1,38 @@
+name: simple-bank-app
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: simple-bank-app-postgres
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: simple_bank_app
+    ports:
+      - "5433:5432"
+    networks:
+      - simple-bank-app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d simple_bank_app -U root"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  web:
+    build: .
+    container_name: simple-bank-app-web
+    ports:
+      - "8082:8082"
+    depends_on:
+      postgres:
+          condition: service_healthy
+    environment:
+      DB_USER: root
+      DB_PASSWORD: secret
+      DB_NAME: simple_bank_app
+      DB_HOST: postgres
+      DB_PORT: 5432
+    networks:
+      - simple-bank-app-network
+networks:
+  simple-bank-app-network:
+    driver: bridge

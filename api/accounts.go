@@ -39,7 +39,7 @@ func (server *Server) createAccount(ctx *gin.Context) {
 				return
 				// foreign_key_violation
 			case "23503":
-				ctx.JSON(http.StatusNotFound, errorResponse(err))
+				ctx.JSON(http.StatusForbidden, errorResponse(err))
 			// Add more cases as needed
 			default:
 				ctx.JSON(http.StatusInternalServerError, errorResponse(err))

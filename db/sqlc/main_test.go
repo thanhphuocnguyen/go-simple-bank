@@ -22,7 +22,8 @@ func TestMain(m *testing.M) {
 		panic(err)
 	}
 
-	testDB, err = pgxpool.New(context.Background(), config.DBSource)
+	dbSource := fmt.Sprintf("postgresql://%s:%s@%s:%d/%s?sslmode=disable", config.DBUser, config.DBPassword, config.DBHost, config.DBPort, config.DBName)
+	testDB, err = pgxpool.New(context.Background(), dbSource)
 	if err != nil {
 		panic(err)
 	}
